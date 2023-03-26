@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+   
+</head>
+<style>
+    table,th,td{
+        border: 1px solid black ;
+        text-align: center;
+        padding: 5px;
+    }
+    table{
+        border-collapse: collapse;
+        width: 50%;
+        margin:30px auto
+    }
+</style>
+<body>
+    <h1 style="text-align:center">Crypto Currency</h1>
+    <label for="refreshDuration">Refresh Interval :</label>
+    <select name="refreshDuration" id="refreshDuration">
+        <option value="500">Every 500ms</option>
+        <option value="1000">Every 1s</option>
+        <option value="1500">Every 1.5s</option>
+    </select>
+
+    <table>
+        <tr>
+            <th>Currency</th>
+            <th>Price</th>
+            <th>Buy</th>
+        </tr>
+        <tbody  class="currency-table">
+            <tr>
+            <td>Bitcoin</td>
+            <td>100</td>
+            <td>Buy</td>
+        </tr>
+        </tbody>
+    </table>
+    <hr/>
+    <h2 style="text-align:center">My Account Portfolio</h2>
+
+    <div
+    style="width :50%;
+    margin:auto;
+    display:flex;
+    justify-content: space-between;
+    ">
+    
+<h3 class="totalQuantity">Total Quantity:<span>0</span></h3>
+<h3 class="totalValue">Total Value:<span>0</span></h3>
+</div>
+<table>
+    <tr>
+        <th>Currency</th>
+        <th>Quantity</th>
+        <th>Purchase Price</th>
+    </tr>
+    <tbody class="portfolio-table"></tbody>
+</table>
+
+</body>
+</html>
+<script>
+    const socket =io("http://localhost:8000",{
+        path:"/currency"
+    })
+    const refreshDurationSelector = document.querySelector("#refreshDuration");
+    socket.on("currency",(msg)=>{
+        document.querySelector(".currency-table").innerHTML= null;
+        msg.forEach((el) => {
+            let name = document.createElement("td");
+            name.innerHTML = el.name;
+            let price = document.createElement("td")
+            price.innerText = el.price ;
+            let buy = document.createElement("td")
+            buy.innerText = "buy"
+            buy.style.curser ="pointer";
+            buy.style.color = "green";
+            buy.onclick =()=>{
+                let promtQuantity = prompt(
+                    `How much currency of ${el.name},do you want to purchase?`
+                )
+                let item = {
+                    id:el.id,
+                    name:el.name,
+                    purchasedPrice:el.price,
+                   quantity: +promtQuantity,
+                };
+                socket.emit("buyCurrency",item);
+                alert("Currency purchased successfully");
+            };
+            let tr = document.createElement("tr")
+            tr.append(name,price,buy)
+            document.querySelector(".currency-table").append(tr)
+        });
+    })
+
+
+    socket.on("refreshTime",(time)=>{
+        refreshDurationSelector.value = time;
+    })
+
+    socket.on("myPortfolio",(portfolio)=>{
+        document.querySelector(".portfolio-table").innerHTML = null;
+        let totalPrice = 0;
+        let totalQuantity = 0;
+        portfolio.forEach((el) => {
+            totalPrice += el.purchasedPrice * el.quantity;
+            totalQuantity += el.quantity;
+            let name = document.createElement("td");
+            name.innerText = el.name;
+            let quantity =  document.createElement("td");
+            quantity.innerText = el.quantity;
+            let purchasedPrice =  document.createElement("td");
+            purchasedPrice.innerText = el.purchasedPrice;
+            let tr = document.createElement("tr");
+            tr.append(name, quantity, purchasedPrice);
+            document.querySelector(".portfolio-table").append(tr)
+        })
+        document.querySelector(".totalQuantity>span").innerText = totalQuantity;
+        document.querySelector(".totalValue>span").innerText = totalPrice;
+    })
+
+    refreshDurationSelector.onchange = () => {
+        socket.emit("refreshChange", refreshDurationSelector.value);
+    }
+</script>

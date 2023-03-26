@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypto Currency</title>
+  </head>
+  <body>
+    <div>
+      <h1>Crypto Currency</h1>
+
+      <label>Refresh Interval :</label>
+      <select name="refreshDuration" id="refreshDuration">
+        <option value="">Every 500ms</option>
+        <option value="">Every 1s</option>
+        <option value="">Every 1.5s</option>
+      </select>
+
+      <table>
+        <tr>
+          <th>Currency</th>
+          <th>Price</th>
+          <th>Buy</th>
+        </tr>
+        <tbody class="currency-table">
+          <tr>
+            <td>Bitcoin</td>
+            <td>100</td>
+            <td>Buy</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div>
+        <h1>My Account Portfolio</h1>
+        <h3 class="totalQuantity">Total Quantity:<span>0</span></h3>
+        <h3 class="totalValue">Total Value:<span>0</span></h3>
+      </div>
+    </div>
+
+    <table>
+    <tr>
+        <th>Currency</th>
+        <th>Quantity</th>
+        <th>Purchase Price</th>
+    </tr>
+    <tbody class="portfolio-table"></tbody>
+</table>
+</body>
+</html>
+
+<script>
+const refreshDurationSelector = document.querySelector("#refreshDuration");
+document.querySelector(".currency-table").innerHtml = null;
+msg.forEach((element) => {
+    let name = document.createElement("td");
+    name.innerHTML = element.name;
+    let price = document.createElement("td");
+    price.innerHTML = element.price;
+    let Buy = document.createElement("td");
+    Buy.innerText = "Buy";
+    buy.style.curser = "pointer";
+    buy.style.color = "red";
+    buy.onclick = () => {
+        let promtQuantity = prompt(
+            `How much currency of ${el.name},do you want to purchase?`
+        )
+        let item = {
+          id : el.id,
+          name : el.name,
+          purchasedPrice : el.price,
+          quantity: +promtQuantity
+        }
+    };
+    let tr = document.createElement("tr");
+    tr.append(name,price,buy);
+    document.querySelector(".currency-table").append(tr);
+});
+</script>
